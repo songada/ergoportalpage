@@ -1,0 +1,17 @@
+{
+  "name": "ergodemo",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Homebrew/homebrew",
+  "authors": [
+    "Song Li <lisong@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "angular": "angularjs#~1.4.7",
+    "jquery": "~2.1.4",
+    "ng-dialog": "~0.5.5",
+    "bootstrap": "~3.3.5",
+    "jquery-ui": "~1.11.4",
+    "angular-google-chart": "~0.0.11"
+  }
+}

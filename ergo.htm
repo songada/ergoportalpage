@@ -1,0 +1,629 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>noosh ergo</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="bower_components/ng-dialog/css/ngDialog.min.css" />
+    <link rel="stylesheet" href="bower_components/ng-dialog/css/ngDialog-theme-default.min.css" />
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="client/assets/styles/site.css">
+</head>
+<body ng-app="ergo">
+
+    <div ng-controller="mainController">
+        <div style="z-index:10">
+            <img src="client/assets/images/ergohead.png" style="margin:5px auto;">
+        </div>
+        <div class="glb-add" style="width:100%;height:30px;">
+            <div class="glb-nmh-icon-add" ng-click="addPanels()" role="button" tabindex="0" style="width:50px;float:right;"></div>
+        </div>
+
+        <script type="text/ng-template" id="addPanelsPopup">
+            <div class="clearfix" style="width:500px;">
+                <div class="panel-icon" ng-click="showPanel(key)" style="width:200px;height:120px;padding:40px;margin:10px;float:left;background-color:#c9c9c9;" ng-repeat="(key,value) in panels">{{value}}</div>
+            </div>
+        </script>
+
+
+        <div class="glb-body" style="position: relative;">
+
+            <div class="glb-wdgt-container" sortable-panels ng-cloak style="displa:none;">
+                <!--client workspace widget-->
+                <div class="glb-wdgt" ng-controller="clientWorkspace" ng-show="showMe" style="width:{{widthPercentage}};height:{{heightPixel}};" index="{{panelIndexId}}">
+                    <div class="glb-wdgt-wrap wrapper">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix" ng-show="normalSize" ng-click="maxMinPanel()" style="min-height:auto;height:430px;overflow:hidden;">
+                            <img src="client/assets/images/iframe-clientforms.png" style="width:100%;margin:0;border:0px;min-height:400px;">
+                        </div>
+                        <iframe class="glb-wdgt-iframe" ng-show="!normalSize" src="http://songsp1.dist.noosh.com:8080/site/multi_one/home" style="width:100%;height:{{heightPixel}};border:none;overflow:hidden;"></iframe>
+                    </div>
+                </div>
+
+                <!--google drive-->
+                <div class="glb-wdgt" ng-controller="googleDrive" ng-show="showMe" style="width:{{widthPercentage}};height:{{heightPixel}};" index="{{panelIndexId}}">
+                    <div class="glb-wdgt-wrap wrapper">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix" style="min-height:auto;height:430px;overflow:hidden;">
+                            <div id="driveAfterLogin" style="display:none;position:relative;">
+
+                                <div style="display:table;vertical-align:middle;margin-bottom: 10px;">
+                                    <div class="glb-com-button" style="padding: 5px 10px;display:table;">
+                                        <svg style="display:table-cell;vertical-align:middle;" focusable="false" viewBox="0 0 20 20" height="20px" width="20px" y="0px" x="0px">
+                                            <path d="M12,0H4C2.896,0,2.01,0.896,2.01,2L2,18c0,1.104,0.886,2,1.99,2H16c1.104,0,2-0.896,2-2V6L12,0z M11,13v4H9v-4H6l4-4l4,4H11 z M11,7V1.5L16.5,7H11z" fill="#000000">
+                                            </path></svg>
+                                        <div style="display:table-cell;vertical-align:middle;">Upload File</div>
+
+                                    </div>
+
+                                    <div class="glb-com-button" style="display:table-cell;padding: 5px 10px;">Create New Document</div>
+
+                                </div>
+                                <ul id="driveFileList" class="drive-file-list">
+
+                                </ul>
+                            </div>
+                            <div id="driveBeforeLogin">
+                                <button id="loginDrive">Authorize to access drive</button>
+                            </div>
+                            <div id="driveCover" style="display:none;position:absolute;top:0;left:0;background-color:rgba(0,0,0,0);width:100%;height:100%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--canto -->
+                <div class="glb-wdgt" ng-controller="canto" ng-show="showMe" style="width:{{widthPercentage}};height:{{heightPixel}};" index="{{panelIndexId}}">
+                    <div class="glb-wdgt-wrap wrapper">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix" style="min-height:auto;height:430px;overflow:hidden;">
+                            <img src="client/assets/images/iframe-canto.png" style="width:auto;margin:0;border:0px;min-height:400px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Charts Start -->
+                <div class="glb-wdgt" ng-controller="mainChartPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="{{panelIndexId}}">
+                    <div class="glb-wdgt-wrap wrapper">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <div google-chart chart="chartOne" style="height:250px; width:30%;" class="pull-left"></div>
+                            <div google-chart chart="chartTwo" style="height:250px; width:30%;" class="pull-left"></div>
+                            <div google-chart chart="chartThree" style="height:250px; width:30%;" class="pull-left"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Main Charts End -->
+
+                <!-- Messages Widget Start -->
+                <div class="glb-wdgt" ng-controller="messagesPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="{{panelIndexId}}">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-message">
+                                <li ng-repeat="message in messages">
+                                    <div class="glb-wdgt-message-self">
+                                        <div class="glb-wdgt-message-item">
+                                            <div>
+                                                {{message.content}}
+                                            </div>
+                                            <div>{{message.subject}}</div>
+                                        </div>
+                                        <div class="glb-wdgt-message-action">
+                                            <a href=""><div class="glb-button-hover">View Message</div></a>
+                                            <div class="green glb-msg-reply-tgl glb-button-hover" ng-click="replay(message.id, $index)">Reply</div>
+                                        </div>
+                                    </div>
+                                    <div class="glb-wdgt-message-reply" ng-show="message.showReply">
+                                        <textarea class="glb-wdgt-message-reply-body"></textarea>
+                                        <button ng-click="sendMessage(message.id, $index)">Reply</button>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Messages Widget End -->
+
+                <!-- Daily Notifications Start -->
+                <div class="glb-wdgt" ng-controller="notificationsPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="{{panelIndexId}}">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <div class="glb-wdgt-notification">
+                                <ul>
+                                    <li>
+                                        <div class="glb-wdgt-notification-header">Noosh Maintenance</div>
+                                        <div class="glb-wdgt-notification-content">The Noosh service will go down for maintenance Friday, April 10, beginning at 6 PM PT and will be ending at 11 PM PT.
+                                            We apologize for any inconvenience you may encounter as a result.</div>
+                                        <div class="glb-wdgt-notification-content">
+                                            Noosh Customer Support<br>
+                                            Support@NewlineNoosh.com<br>
+                                            1-888-AT NOOSH (1-888-286-6674)
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Daily Notification End -->
+
+                <!-- Project to Estimate Start -->
+                <div class="glb-wdgt" ng-controller="projectToEstimatePanel" ng-show="showMe" style="width:{{widthPercentage}}" index="6">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-project-toEstimate-header">
+                                <li>3 Requests for Estimate</li>
+                                <li>Received</li>
+                            </ul>
+                            <ul class="glb-wdgt-project-toEstimate">
+                                <li>
+                                    <div class="glb-wdgt-project-toEstimate-item">
+                                        <div>2016 New Year Catalogue</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href="demo-NshEntProj.html"><div class="glb-button-hover">Review Project</div></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item">
+                                <div><a>Create Estimate for RFE</a></div>
+                                <div>Yang User</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <ul class="glb-wdgt-task" style="background-color: #f1f1f1;">
+                                <li style="background-color: #f1f1f1;">
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Thanksgiving Mail Campaign</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href="demo-NshEntProj.html"><div class="glb-button-hover">Review Project</div></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div><a>Create Estimate for RFE</a></div>
+                                <div>Yang User</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project to Estimate Start -->
+
+                <!-- Tasks Start -->
+                <div class="glb-wdgt" ng-controller="tasksPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="7">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-task">
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Review Project: 2016 New Year Catalogue</div>
+                                        <div></div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href="demo-NshEntProj.html"><div class="glb-button-hover">Review Project</div></a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Send Designs for Christmas Mail Packet 2015</div>
+                                        <div>Due 11/10/2015</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href=""><div class="glb-button-hover">View Task</div></a>
+                                        <div class="yellow glb-task-status glb-button-hover">In Progress</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Complete Design for 2016 New Year Catalogue</div>
+                                        <div>Due 11/30/2015</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href=""><div class="glb-button-hover">View Task</div></a>
+                                        <div class="red glb-task-status glb-button-hover">Not Started</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Thanksgiving Mail Campaign Designs 2015</div>
+                                        <div>Due 10/20/2015</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href=""><div class="glb-button-hover">View Task</div></a>
+                                        <div class="green glb-task-status glb-button-hover">Completed</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Estimate Received for Thanksgiving Mail Campaign</div>
+                                        <div></div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href=""><div class="glb-button-hover">Review Estimate</div></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tasks End -->
+
+                <!-- Estimates to Review Start -->
+                <div class="glb-wdgt" ng-controller="estimateToReviewPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="8">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-task">
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>2016 New Year Catalogue</div>
+                                        <div>10/10/10</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href="demo-NshEntProj.html"><div class="glb-button-hover">Review Estimate</div></a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>2015 Christmas Mail Packet</div>
+                                        <div>10/10/10</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href="demo-NshEntProj.html"><div class="glb-button-hover">Review Estimate</div></a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>2015 Christmas Catalogue</div>
+                                        <div>Due 11/30/2015</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href="demo-NshEntProj.html"><div class="glb-button-hover">Review Estimate</div></a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>2015 Thanksgiving Catalogue</div>
+                                        <div>10/20/2015</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href="demo-NshEntProj.html"><div class="glb-button-hover">Review Estimate</div></a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>2015 Thanksgiving Mail Campaign</div>
+                                        <div>10/20/2015</div>
+                                    </div>
+                                    <div class="glb-wdgt-task-action">
+                                        <a href=""><div class="glb-button-hover">Review Estimate</div></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Estimates to Review End -->
+
+                <!-- Pending Invoices Start -->
+                <div class="glb-wdgt" ng-controller="pendingInvoicesPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="9">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-pendingInvoices-header">
+                                <li>3 Invoices</li>
+                                <li>Submitted</li>
+                                <li>Due</li>
+                            </ul>
+                            <ul class="glb-wdgt-pendingInvoices">
+                                <li>
+                                    <div class="glb-wdgt-pendingInvoices-item">
+                                        <div>2016 New Year Catalogue Invoice</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item">
+                                <div><a>Invoice: 41392</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <ul class="glb-wdgt-task" style="background-color: #f1f1f1;">
+                                <li style="background-color: #f1f1f1;">
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Thanksgiving Mail Campaign</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div><a>Invoice: 41393</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <ul class="glb-wdgt-task">
+                                <li>
+                                    <div class="glb-wdgt-task-item">
+                                        <div>2016 Christmas Mail Campaign</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item">
+                                <div><a>Invoice: 41394</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pending Invoices End -->
+
+                <!-- Pending Orders and Changes -->
+                <div class="glb-wdgt" ng-controller="pendingOrdersPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="10">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-pendingInvoices-header">
+                                <li>2 Orders | 0 Change Orders</li>
+                                <li>Last Modified</li>
+                                <li>Completion</li>
+                            </ul>
+                            <ul class="glb-wdgt-pendingInvoices">
+                                <li>
+                                    <div class="glb-wdgt-pendingInvoices-item">
+                                        <div>2016 New Year Catalogue</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item">
+                                <div><a>Order: 41392</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item">
+                                <div>Pending Client Acceptance</div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <ul class="glb-wdgt-task" style="background-color: #f1f1f1;">
+                                <li style="background-color: #f1f1f1;">
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Thanksgiving Mail Campaign</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div><a>Order: 41393</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div>Pending Client Acceptance</div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pending Orders and Changes -->
+
+
+                <!-- Pending Quotes Widget Start -->
+                <div class="glb-wdgt" ng-controller="pendingQuotesPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="11">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-pending-header">
+                                <li>3 Quotes</li>
+                                <li>Submitted</li>
+                                <li>Completion</li>
+                            </ul>
+                            <ul class="glb-wdgt-pending">
+                                <li>
+                                    <div class="glb-wdgt-pending-item">
+                                        <div>2016 New Year Catalogue</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item">
+                                <div><a>Quote: 41392</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <ul class="glb-wdgt-task" style="background-color: #f1f1f1;">
+                                <li style="background-color: #f1f1f1;">
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Thanksgiving Mail Campaign</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div><a>Quote: 41393</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <ul class="glb-wdgt-task" style="background-color: #f1f1f1;">
+                                <li style="background-color: #f1f1f1;">
+                                    <div class="glb-wdgt-task-item">
+                                        <div>Christmas Mail Campaign</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div><a>Quote: 41394</a></div>
+                            </div>
+                            <div class="glb-wdgt-task-list-item" style="background-color: #f1f1f1;">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                            </div>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pending Quotes Widget End -->
+
+                <!-- Open RFQs Widget Start -->
+                <div class="glb-wdgt" ng-controller="openRfqsPanel" ng-show="showMe" style="width:{{widthPercentage}}" index="12">
+                    <div class="glb-wdgt-wrap">
+                        <com-panel-header></com-panel-header>
+
+                        <div class="glb-wdgt-ct clearfix">
+                            <ul class="glb-wdgt-pending-4-header">
+                                <li>3 RFQs</li>
+                                <li>Submitted</li>
+                                <li>Due</li>
+                                <li>Quote Count</li>
+                            </ul>
+                            <ul class="glb-wdgt-pending-4">
+                                <li>
+                                    <div class="glb-wdgt-pending-4-item">
+                                        <div>2016 New Year Catalogue</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-pending-4-item-list">
+                                <div><a>RFQ: 41392</a></div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                                <div>&nbsp;</div>
+                            </div>
+                            <div class="glb-wdgt-pending-4-item-list">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>&nbsp;</div>
+                                <div>0</div>
+                            </div>
+                            <ul class="glb-wdgt-pending-4" style="background-color: #f1f1f1;">
+                                <li style="background-color: #f1f1f1;">
+                                    <div class="glb-wdgt-pending-4-item">
+                                        <div>2015 Thanksgiving Mail Campaign</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-pending-4-item-list" style="background-color: #f1f1f1;">
+                                <div><a>RFQ: 41393</a></div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                                <div>&nbsp;</div>
+                            </div>
+                            <div class="glb-wdgt-pending-4-item-list" style="background-color: #f1f1f1;">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>&nbsp;</div>
+                                <div>0</div>
+                            </div>
+                            <ul class="glb-wdgt-pending-4">
+                                <li>
+                                    <div class="glb-wdgt-pending-4-item">
+                                        <div>2015 Christmas Mail Campaign</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="glb-wdgt-pending-4-item-list">
+                                <div><a>RFQ: 41394</a></div>
+                                <div>01/01/01</div>
+                                <div>01/01/01</div>
+                                <div>&nbsp;</div>
+                            </div>
+                            <div class="glb-wdgt-pending-4-item-list">
+                                <div>Yang Supplier</div>
+                                <div>&nbsp;</div>
+                                <div>&nbsp;</div>
+                                <div>0</div>
+                            </div>
+                            <div class="glb-wdgt-more">
+                                <div>View More</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Open RFQs Widget End-->
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-google-chart/ng-google-chart.js"></script>
+    <script src="bower_components/ng-dialog/js/ngDialog.min.js"></script>
+
+    <script src="client/script/app.js"></script>
+    <script src="client/script/ergo.ctrl.js"></script>
+
+    <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+angular.module('ergoPortal', ['ngDialog', 'googlechart']);
